@@ -1,0 +1,52 @@
+-- Таблица профилей
+CREATE TABLE profiles (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE,
+    max_pairs INTEGER NOT NULL
+);
+
+-- Таблица временных интервалов занятий
+CREATE TABLE profile_times (
+    profile_id INTEGER NOT NULL,
+    pair_number INTEGER NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    PRIMARY KEY (profile_id, pair_number),
+    FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE CASCADE
+);
+
+-- Таблица аудиторий
+CREATE TABLE rooms (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE
+);
+
+-- Таблица преподавателей
+CREATE TABLE teachers (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE
+);
+
+-- Таблица списка расписаний
+CREATE TABLE schedules_list (
+    id SERIAL PRIMARY KEY,
+    profile_id INTEGER REFERENCES profiles(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    schedule_type TEXT NOT NULL
+);
+
+-- Таблица расписания по занятиям
+CREATE TABLE schedules (
+    id SERIAL PRIMARY KEY,
+    schedule_id INTEGER REFERENCES schedules_list(id) ON DELETE CASCADE,
+    week_day TEXT NOT NULL,
+    pair_number INTEGER NOT NULL,
+    room_id INTEGER REFERENCES rooms(id),
+    teacher_id INTEGER REFERENCES teachers(id),
+    lesson_type TEXT,
+    discipline TEXT,
+    week_type INTEGER NOT NULL,
+    time_interval TEXT NOT NULL,
+    
+    CONSTRAINT unique_schedule_entry UNIQUE (schedule_id, week_day, pair_number, week_type)
+);
